@@ -8,7 +8,19 @@ module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
     context.log('DB:', mongodbUri);
 
-    if (req.query.name || (req.body && req.body.name)) {
+    if (!req.body) {
+        context.res = {
+            status: 400,
+            body: "No body in request"
+        };        
+    }
+    else if (!req.body.bundleSize) {
+        context.res = {
+            status: 400,
+            body: "No bundleSize in request"
+        };        
+    }
+    else if (req.query.name || (req.body && req.body.name)) {
 
         context.res = {
             // status: 200, /* Defaults to 200 */
@@ -24,7 +36,8 @@ module.exports = async function (context, req) {
 
         context.log('connected to mongodb')
         await mongoClient.db('stardust').collection('stats').insertOne({
-            name: req.body.name
+            name: req.body.name,
+            bundleSize: req.body.bundleSize
         });
         context.log('document inserted')
         await mongoClient.close()
