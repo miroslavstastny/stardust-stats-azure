@@ -1,0 +1,6 @@
+{
+  "name": "stardust-stats-azure",
+  "dependencies": {
+    "mongodb": "3.1.13"
+  }
+}
