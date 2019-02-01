@@ -46,10 +46,13 @@ module.exports = async function (context, req) {
         }
     });
 
-    context.log('connected to mongodb')
-    await mongoClient.db('stardust').collection('stats').insertOne(_.pick(req.body, [...mandatoryFields, ...optionalFields]));
-    context.log('document inserted')
-    await mongoClient.close()
+    context.log('connected to mongodb');
+    const document = _.pick(req.body, [...mandatoryFields, ...optionalFields]);
+    document.build = Number(document.build);
+    document.ts = new Date(document.ts);
+    await mongoClient.db('stardust').collection('stats').insertOne(document);
+    context.log('document inserted');
+    await mongoClient.close();
 
     context.res = {
         // status: 200, /* Defaults to 200 */
