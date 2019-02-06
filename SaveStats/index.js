@@ -48,12 +48,22 @@ module.exports = async function (context, req) {
 
     context.log('connected to mongodb');
     const document = _.pick(req.body, [...mandatoryFields, ...optionalFields]);
+    document._id = Number(document.build);
     document.build = Number(document.build);
     document.ts = new Date(document.ts);
-    await mongoClient.db('stardust').collection('stats').insertOne(document);
-    context.log('document inserted');
+    try {
+        await mongoClient.db('stardust').collection('stats').insertOne(document);
+        context.log('document inserted');
+    } catch (err) {
+        const errorMessage = err.errmsg ? err.errmsg : `Unknown error when inserting document into DB: ${err}`
+        context.log.error(errorMessage)
+        context.res = {
+            status: 400,
+            body: errorMessage
+        };
+        return;
+    }
     await mongoClient.close();
-
     context.res = {
         // status: 200, /* Defaults to 200 */
         body: `Stats saved`
