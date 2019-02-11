@@ -11,7 +11,7 @@ function checkDataContainsFields(data, requiredFields) {
 }
 
 const mandatoryFields = ['sha', 'branch', 'build', 'bundleSize', 'ts'];
-const optionalFields = ['tag', 'pr'];
+const optionalFields = ['tag', 'pr', 'performance'];
 
 module.exports = async function (context, req) {
     const mongodbUri = process.env["MONGODB_URI"];
