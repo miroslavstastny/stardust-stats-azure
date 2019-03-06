@@ -1,4 +1,9 @@
 const mongodb = require('mongodb')
+const config = require('../Shared/config')
+
+const mongodbUri = process.env['MONGODB_URI']
+const mongodbUser = process.env['MONGODB_USER']
+const mongodbPass = process.env['MONGODB_PASS']
 
 /**
  * Returns list of perf results on master branch, sorted by build number desc
@@ -6,10 +11,6 @@ const mongodb = require('mongodb')
  * @param buildLt - Returns last 50 results by default. With this param you can get 50 results before the build number specified.
  */
 module.exports = async function(context, req) {
-  const mongodbUri = process.env['MONGODB_URI']
-  const mongodbUser = process.env['MONGODB_USER']
-  const mongodbPass = process.env['MONGODB_PASS']
-
   const mongoClient = await mongodb.MongoClient.connect(mongodbUri, {
     // TODO: share persistent connection among requests
     auth: {
@@ -45,8 +46,8 @@ module.exports = async function(context, req) {
 
   try {
     const data = await mongoClient
-      .db('stardust')
-      .collection('stats')
+      .db(config.database.db)
+      .collection(config.database.collection)
       .find(query)
       .project(project)
       .sort([['_id', -1]]) // build === _id and _id is indexed
