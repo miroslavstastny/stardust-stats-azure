@@ -33,6 +33,7 @@ module.exports = async function(context, req) {
     build: 1,
     tag: 1,
     sha: 1,
+    ts: 1,
   }
 
   if (req.query.example && /^[\w\d]+$/.exec(req.query.example)) {
