@@ -8,7 +8,7 @@ const mongodbPass = process.env['MONGODB_PASS']
 /**
  * Returns list of perf results on master branch, sorted by build number desc
  * @param example - Returns results for all perf examples by default. This param can filter results for single example.
- * @param buildLt - Returns last 50 results by default. With this param you can get 50 results before the build number specified.
+ * @param buildLt - Returns last 250 results by default. With this param you can get 250 results before the build number specified.
  */
 module.exports = async function(context, req) {
   const mongoClient = await mongodb.MongoClient.connect(mongodbUri, {
@@ -52,7 +52,7 @@ module.exports = async function(context, req) {
       .find(query)
       .project(project)
       .sort([['_id', -1]]) // build === _id and _id is indexed
-      .limit(50)
+      .limit(250)
       .toArray()
 
     context.res = {
