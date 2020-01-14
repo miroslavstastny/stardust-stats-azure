@@ -4,11 +4,13 @@ const config = require('../Shared/config')
 const mongodbUri = process.env['MONGODB_URI']
 const mongodbUser = process.env['MONGODB_USER']
 const mongodbPass = process.env['MONGODB_PASS']
+const itemLimit = 250 // number of items returned when public-only filter is off
+const publicItemLimit = 50 // number of items returned when public-only filter is on (default)
 
 /**
  * Returns list of perf results on master branch, sorted by build number desc
  * @param example - Returns results for all perf examples by default. This param can filter results for single example.
- * @param buildLt - Returns last 250 results by default. With this param you can get 250 results before the build number specified.
+ * @param buildLt - Returns last `itemLimit` (or `publicItemLimit`) results by default. With this param you can get `itemLimit` (or `publicItemLimit`) results before the build number specified.
  */
 module.exports = async function(context, req) {
   const mongoClient = await mongodb.MongoClient.connect(mongodbUri, {
@@ -26,6 +28,12 @@ module.exports = async function(context, req) {
   if (req.query.buildLt && /^\d+$/.exec(req.query.buildLt)) {
     query.build = {
       $lt: Number(req.query.buildLt),
+    }
+  }
+
+  if (!req.query.withPrivateBuilds) {
+    query.tag = {
+      $exists: 1,
     }
   }
 
@@ -52,7 +60,7 @@ module.exports = async function(context, req) {
       .find(query)
       .project(project)
       .sort([['_id', -1]]) // build === _id and _id is indexed
-      .limit(250)
+      .limit(req.query.withPrivateBuilds ? itemLimit : publicItemLimit)
       .toArray()
 
     context.res = {
