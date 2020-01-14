@@ -5,7 +5,7 @@ const mongodbUri = process.env['MONGODB_URI']
 const mongodbUser = process.env['MONGODB_USER']
 const mongodbPass = process.env['MONGODB_PASS']
 const itemLimit = 250 // number of items returned when public-only filter is off
-const publicItemLimit = 50 // number of items returned when public-only filter is on (default)
+const publicItemLimit = 30 // number of items returned when public-only filter is on (default)
 
 /**
  * Returns list of perf results on master branch, sorted by build number desc
