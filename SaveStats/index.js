@@ -17,6 +17,8 @@ module.exports = async function(context, req) {
   const mongodbUri = process.env['MONGODB_URI']
   const mongodbUser = process.env['MONGODB_USER']
   const mongodbPass = process.env['MONGODB_PASS']
+  const mongodbDatabase = process.env['MONGODB_DATABASE']
+  const mongodbCollection = process.env['MONGODB_COLLECTION']
 
   context.log('SaveStats, DB:', mongodbUri)
 
@@ -52,8 +54,8 @@ module.exports = async function(context, req) {
   document.ts = new Date(document.ts)
   try {
     await mongoClient
-      .db('stardust')
-      .collection('stats')
+      .db(mongodbDatabase)
+      .collection(mongodbCollection)
       .insertOne(document)
     context.log('document inserted')
   } catch (err) {

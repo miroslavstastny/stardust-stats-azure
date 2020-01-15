@@ -1,9 +1,11 @@
 const mongodb = require('mongodb')
-const config = require('../Shared/config')
 
 const mongodbUri = process.env['MONGODB_URI']
 const mongodbUser = process.env['MONGODB_USER']
 const mongodbPass = process.env['MONGODB_PASS']
+const mongodbDatabase = process.env['MONGODB_DATABASE']
+const mongodbCollection = process.env['MONGODB_COLLECTION']
+
 const itemLimit = 250 // number of items returned when public-only filter is off
 const publicItemLimit = 30 // number of items returned when public-only filter is on (default)
 
@@ -55,8 +57,8 @@ module.exports = async function(context, req) {
 
   try {
     const data = await mongoClient
-      .db(config.database.db)
-      .collection(config.database.collection)
+      .db(mongodbDatabase)
+      .collection(mongodbCollection)
       .find(query)
       .project(project)
       .sort([['_id', -1]]) // build === _id and _id is indexed

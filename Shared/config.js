@@ -1,8 +1,5 @@
 const config = {
-  database: {
-    db: 'stardust',
-    collection: 'stats',
-  },
+  // empty
 }
 
 module.exports = config
