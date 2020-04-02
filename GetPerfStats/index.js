@@ -13,6 +13,7 @@ const publicItemLimit = 30 // number of items returned when public-only filter i
  * Returns list of perf results on master branch, sorted by build number desc
  * @param example - Returns results for all perf examples by default. This param can filter results for single example.
  * @param buildLt - Returns last `itemLimit` (or `publicItemLimit`) results by default. With this param you can get `itemLimit` (or `publicItemLimit`) results before the build number specified.
+ * @param buildGt - Only return builds greater than the param.
  */
 module.exports = async function(context, req) {
   const mongoClient = await mongodb.MongoClient.connect(mongodbUri, {
@@ -27,9 +28,18 @@ module.exports = async function(context, req) {
     branch: 'master',
   }
 
-  if (req.query.buildLt && /^\d+$/.exec(req.query.buildLt)) {
-    query.build = {
+  const hasBuildLt = req.query.buildLt && /^\d+$/.exec(req.query.buildLt)
+  const hasBuildGt = req.query.buildGt && /^\d+$/.exec(req.query.buildGt)
+
+  if (hasBuildLt) {
+    query._id = {
       $lt: Number(req.query.buildLt),
+    }
+  }
+  if (hasBuildGt) {
+    query._id = {
+      ...(query._id ? query._id : {}),
+      $gt: Number(req.query.buildGt),
     }
   }
 
@@ -48,8 +58,10 @@ module.exports = async function(context, req) {
 
   if (req.query.example && /^[\w\d]+$/.exec(req.query.example)) {
     project[`performance.${req.query.example}`] = 1
+    project[`bundleSize.${req.query.example}`] = 1
   } else {
     project.performance = 1
+    project.bundleSize = 1
   }
 
   context.log('Query', JSON.stringify(query, null, 2))
