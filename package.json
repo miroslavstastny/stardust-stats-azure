@@ -4,7 +4,7 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mongodb": "3.1.13"
   },
   "devDependencies": {
